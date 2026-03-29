@@ -225,58 +225,7 @@ func setupDatabase(db *sql.DB) error {
 			created_at TEXT NOT NULL
 		)
 	`)
-	if err != nil {
-		return err
-	}
-
-	var count int
-	if err := db.QueryRow(`SELECT COUNT(*) FROM posts`).Scan(&count); err != nil {
-		return err
-	}
-
-	if count > 0 {
-		return nil
-	}
-
-	seedTemplates := []struct {
-		platform string
-		author   string
-		content  string
-	}{
-		{"x", "alex", "Love the new listen ai feature, dashboard is great and fast."},
-		{"x", "maria", "The latest update has bugs and slow loading, bad experience."},
-		{"reddit", "devguy", "Streamlit frontend is smooth, but auth flow is not great."},
-		{"x", "sarah", "Awesome analytics, keyword trends are excellent for our team."},
-		{"reddit", "mark", "Hate the UI changes, feels broken and confusing."},
-		{"x", "nina", "Customer support was good and very helpful."},
-		{"reddit", "tom", "Not bad at all, performance is good this week."},
-		{"x", "ivy", "Pricing is expensive and setup is awful for small teams."},
-		{"reddit", "paul", "Great release, mentions tracking is reliable and awesome."},
-		{"x", "rita", "There is an issue with login, still waiting for a fix."},
-	}
-
-	now := time.Now()
-	tx, err := db.Begin()
-	if err != nil {
-		return err
-	}
-	defer tx.Rollback()
-
-	stmt, err := tx.Prepare(`INSERT INTO posts(platform, author, content, created_at) VALUES(?, ?, ?, ?)`)
-	if err != nil {
-		return err
-	}
-	defer stmt.Close()
-
-	for i := 0; i < 120; i++ {
-		t := seedTemplates[i%len(seedTemplates)]
-		date := now.AddDate(0, 0, -(i % 30)).Add(-time.Duration((i%24))*time.Hour)
-		if _, err := stmt.Exec(t.platform, t.author, t.content, date.Format(time.RFC3339)); err != nil {
-			return err
-		}
-	}
-
-	return tx.Commit()
+	return err
 }
 
 func writeJSON(w http.ResponseWriter, status int, payload interface{}) {
