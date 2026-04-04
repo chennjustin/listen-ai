@@ -15,7 +15,7 @@ if "token" not in st.session_state:
 
 st.title("ListenAI Dashboard")
 st.caption("Track sentiment, keywords, trends, and example posts by keyword filters.")
-st.text("Hello! 梁安哲")
+st.text("Hello! 陳竑齊")
 
 dashboard_tab, add_post_tab = st.tabs(["Dashboard", "Add Post"])
 
