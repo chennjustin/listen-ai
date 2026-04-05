@@ -1,0 +1,39 @@
+services:
+  stat:
+    build: ./stat
+    environment:
+      STAT_PORT: "8002"
+      SQLITE_PATH: /data/listenai.db
+    volumes:
+      - ./data:/data   # 讓容器讀寫主機上的 data/listenai.db
+    expose:
+      - "8002"         # 只給內網用可只 expose；要從主機測 stat 再加 ports
+
+  nlp:
+    build: ./nlp
+    environment:
+      NLP_PORT: "8001"
+    expose:
+      - "8001"
+
+  gateway:
+    build: ./gateway
+    environment:
+      GATEWAY_PORT: "8000"
+      STAT_URL: http://stat:8002
+      NLP_URL: http://nlp:8001
+    ports:
+      - "8000:8000"
+    depends_on:
+      - stat
+      - nlp
+
+  frontend:
+    build: ./frontend
+    environment:
+      GATEWAY_URL: http://gateway:8000
+      STREAMLIT_SERVER_PORT: "8501"
+    ports:
+      - "8501:8501"
+    depends_on:
+      - gateway
